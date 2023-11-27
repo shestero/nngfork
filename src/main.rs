@@ -25,11 +25,15 @@ fn main() -> Result<(), Box<dyn std::error::Error + 'static>> {
         c1.send(req.clone()).map_err(|(_, err)| err)?;
         c2.send(req.clone()).map_err(|(_, err)| err)?;
         let resp1: Message = c1.recv()?;
+        let v1 = resp1.to_vec();
+        println!("resp1 = {:?}", v1);
         let resp2: Message = c2.recv()?;
-        if resp1.to_vec()!=resp2.to_vec() {
+        let v2 = resp2.to_vec();
+        println!("resp2 = {:?}", v2.to_vec());
+        if v1!=v2 {
             eprintln!(
-                "Responses not confirmed! req={:#?}, response1={:#?}, response2={:#?}.",
-                req, resp1, resp2
+                "Responses not confirmed!\nrequest={:?},\nresponse1={:?},\nresponse2={:?}.",
+                req.to_vec(), v1, v2
             );
         }
         let _ = s.send(resp1.as_slice()).map_err(|(_, e)| e)?;
